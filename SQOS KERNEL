@@ -1,0 +1,63 @@
+[bits 16]
+[org 0x1000]
+
+kernel_start:
+    mov ax, 0
+    mov ds, ax
+    mov es, ax
+    
+    mov ah, 0x00
+    mov al, 0x03
+    int 0x10
+
+    mov ah, 0x01    mov cx, 0x0607
+    int 0x10
+
+    mov bh, 0
+    mov dh, 0
+    mov dl, 0
+    mov ah, 0x02
+    int 0x10
+
+main_loop:
+    mov ah, 0x00
+    int 0x16
+
+    cmp al, 0x0D
+    je newline    cmp al, 0x08
+    je backspace
+
+    mov ah, 0x0E
+    int 0x10
+    jmp main_loop
+
+newline:
+    mov ah, 0x03
+    mov bh, 0
+    int 0x10
+    
+    inc dh
+    mov dl, 0
+    mov ah, 0x02
+    int 0x10
+    jmp main_loop
+
+backspace:
+    mov ah, 0x03
+    mov bh, 0
+    int 0x10
+    
+    cmp dl, 0
+    je main_loop    
+    dec dl
+    mov ah, 0x02
+    int 0x10    
+    mov ah, 0x0E
+    mov al, ' '
+    int 0x10
+    
+    mov ah, 0x02
+    int 0x10
+    jmp main_loop
+
+times 512-($-$$) db 0
